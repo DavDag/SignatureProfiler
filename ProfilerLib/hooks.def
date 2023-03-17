@@ -1,0 +1,3 @@
+EXPORTS
+	_penter
+	_pexit

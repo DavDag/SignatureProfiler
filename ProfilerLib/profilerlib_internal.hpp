@@ -12,15 +12,12 @@ BOOL APIENTRY DllMain(HMODULE, DWORD, LPVOID);
 namespace profiler {
 	namespace internal {
 		extern bool enabled;
-		extern ProfilingEventCallback enterEventCallback;
-		extern ProfilingEventCallback exitEventCallback;
-		extern ProfilingErrorCallback errorCallback;
-		extern std::unordered_map<void*, ProfilingAddrInfo> database;
+		extern std::unordered_map<void*, const AddrInfo*> database;
 		//
 		bool init(HMODULE hModule);
 		bool exit();
-		bool getAddrInfo(void* address, ProfilingAddrInfo& out);
-		bool error();
-		void errorAsString(int errorCode, char* outbuffer, size_t outbuffersize);
+		bool getAddrInfo(void* address, AddrInfo* out);
+		void error();
+		void errorAsString(int code, char* outbuffer, size_t outbuffersize);
 	}
 }

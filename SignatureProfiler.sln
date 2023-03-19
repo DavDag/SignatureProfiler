@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleApp01", "ExampleApp01\ExampleApp01.vcxproj", "{94EB069E-E921-4A87-9FEE-8FAB7586D045}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2F55FE9D-93F5-4747-AD24-520D5C764228} = {2F55FE9D-93F5-4747-AD24-520D5C764228}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProfilerLib", "ProfilerLib\ProfilerLib.vcxproj", "{2F55FE9D-93F5-4747-AD24-520D5C764228}"
 EndProject

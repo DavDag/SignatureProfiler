@@ -7,20 +7,18 @@
 #endif
 
 namespace profiler {
-	struct ProfilingAddrInfo {
+	struct AddrInfo {
 		void* address = nullptr;
 		char funcName[1024] = { {'\0'} };
 		char fileName[1024] = { {'\0'} };
 		int line = 0;
 	};
-	typedef void (*ProfilingEventCallback)(const ProfilingAddrInfo& info);
-	typedef void (*ProfilingErrorCallback)(int errorCode);
 	void DLLAPI enable();
 	void DLLAPI disable();
-	void DLLAPI setEnterEventCallback(ProfilingEventCallback callback);
-	void DLLAPI setExitEventCallback(ProfilingEventCallback callback);
-	void DLLAPI setErrorCallback(ProfilingErrorCallback callback);
-	void errorAsString(int errorCode, char* outbuffer, size_t outbuffersize);
+	namespace frame {
+		void DLLAPI start();
+		void DLLAPI end();
+	}
 }
 
 // [NECESSARY] Since they're referenced inside 'hooks.asm'

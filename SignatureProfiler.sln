@@ -13,15 +13,20 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
+		Profile|x64 = Profile|x64
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{94EB069E-E921-4A87-9FEE-8FAB7586D045}.Debug|x64.ActiveCfg = Debug|x64
 		{94EB069E-E921-4A87-9FEE-8FAB7586D045}.Debug|x64.Build.0 = Debug|x64
+		{94EB069E-E921-4A87-9FEE-8FAB7586D045}.Profile|x64.ActiveCfg = Profile|x64
+		{94EB069E-E921-4A87-9FEE-8FAB7586D045}.Profile|x64.Build.0 = Profile|x64
 		{94EB069E-E921-4A87-9FEE-8FAB7586D045}.Release|x64.ActiveCfg = Release|x64
 		{94EB069E-E921-4A87-9FEE-8FAB7586D045}.Release|x64.Build.0 = Release|x64
 		{2F55FE9D-93F5-4747-AD24-520D5C764228}.Debug|x64.ActiveCfg = Debug|x64
 		{2F55FE9D-93F5-4747-AD24-520D5C764228}.Debug|x64.Build.0 = Debug|x64
+		{2F55FE9D-93F5-4747-AD24-520D5C764228}.Profile|x64.ActiveCfg = Profile|x64
+		{2F55FE9D-93F5-4747-AD24-520D5C764228}.Profile|x64.Build.0 = Profile|x64
 		{2F55FE9D-93F5-4747-AD24-520D5C764228}.Release|x64.ActiveCfg = Release|x64
 		{2F55FE9D-93F5-4747-AD24-520D5C764228}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection

@@ -3,7 +3,7 @@
 
 #include "..\ProfilerLib\profilerlib.hpp"
 
-#define LOG(STR) std::cout << STR
+//#define LOG(STR) std::cout << STR
 #define LOG(STR)
 
 __declspec(noinline) void testNoInline() {
@@ -85,20 +85,21 @@ int main(int argc, char* argv[]) {
     ///////////////////////////////////////////////////////////////////////////////////
     LOG("[PROFILER ENABLED]\n");
     profiler::Enable();
-    int profilerInvocations = 0;
+    long long int profilerInvocations = 0;
     for (int i = 0; i < 100'000; ++i) {
         profiler::FrameStart();
         mymain();
         profilerInvocations += profiler::GetFrameHistory().size();
         profiler::FrameEnd();
     }
+    profiler::LogHistory();
     profiler::Disable();
     LOG("[PROFILER DISABLED]\n");
     ///////////////////////////////////////////////////////////////////////////////////
     auto mainEnd = std::chrono::high_resolution_clock::now();
     auto mainDelta = std::chrono::duration_cast<std::chrono::microseconds>(mainEnd - mainStart);
     ///////////////////////////////////////////////////////////////////////////////////
-    int timeSpentInsideFunctions = 0;
+    long long int timeSpentInsideFunctions = 0;
     const auto& stats = profiler::GetStats();
     for (const auto& p : stats) {
         auto funcId = p.first;
@@ -119,7 +120,7 @@ int main(int argc, char* argv[]) {
     }
     ///////////////////////////////////////////////////////////////////////////////////
     printf("Main Tot (ns): %lld\n", mainDelta.count());
-    printf("Profiler Invocation Count: %d\n", profilerInvocations);
+    printf("Profiler Invocation Count: %lld\n", profilerInvocations);
     printf("Profiler Time (ns): %lld\n", mainDelta.count() - timeSpentInsideFunctions);
     printf("Profiler Avg x Call (ns): %.4f\n", (mainDelta.count() - timeSpentInsideFunctions) / (double)profilerInvocations);
     return 0;

@@ -1,0 +1,10 @@
+^D:\EXTRA\[OPENGL] 3D CELLULAR AUTOMATA\3D CELLULAR AUTOMATA\GLFW-3.3.8\SRC\CMAKELISTS.TXT
+setlocal
+"D:\Program Files\CMake\bin\cmake.exe" "-SD:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8" "-BD:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8" --check-stamp-file "D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/src/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

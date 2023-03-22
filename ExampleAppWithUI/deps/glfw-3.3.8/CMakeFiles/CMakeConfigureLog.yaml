@@ -1,0 +1,288 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Program Files/CMake/share/cmake-3.26/Modules/CMakeDetermineSystem.cmake:204 (message)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      The system is: Windows - 10.0.22621 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/Program Files/CMake/share/cmake-3.26/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/Program Files/CMake/share/cmake-3.26/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/Program Files/CMake/share/cmake-3.26/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      MSBuild version 17.5.0+6f08c67f3 for .NET Framework
+      Build started 02/03/2023 09:20:53.
+      Included response file: D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
+      
+      Project "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\3.26.0-rc5\\CompilerIdC\\CompilerIdC.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+        Creating directory "Debug\\CompilerIdC.tlog\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdC.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+      ClCompile:
+        D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TC /FC /errorReport:queue CMakeCCompilerId.c
+        CMakeCCompilerId.c
+      Link:
+        D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdC.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdC.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdC.lib" /MACHINE:X64 Debug\\CMakeCCompilerId.obj
+        CompilerIdC.vcxproj -> D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\3.26.0-rc5\\CompilerIdC\\CompilerIdC.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_C_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_C_COMPILER=D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdC.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdC.tlog\\CompilerIdC.lastbuildstate".
+      Done Building Project "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\3.26.0-rc5\\CompilerIdC\\CompilerIdC.vcxproj" (default targets).
+      
+      Build succeeded.
+          0 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:00.44
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.vcxproj"
+      
+      The C compiler identification is MSVC, found in:
+        D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/3.26.0-rc5/CompilerIdC/CompilerIdC.exe
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/Program Files/CMake/share/cmake-3.26/Modules/CMakeDetermineCompilerABI.cmake:57 (try_compile)"
+      - "D:/Program Files/CMake/share/cmake-3.26/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:3 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-j0861b"
+      binary: "D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-j0861b"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
+      CMAKE_C_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-j0861b
+        
+        Run Build Command(s):D:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_7a587.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.0+6f08c67f3 for .NET Framework
+        Build started 02/03/2023 09:20:53.
+        Included response file: D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
+        
+        Project "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-j0861b\\cmTC_7a587.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_7a587.dir\\Debug\\".
+          Creating directory "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-j0861b\\Debug\\".
+          Creating directory "cmTC_7a587.dir\\Debug\\cmTC_7a587.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_7a587.dir\\Debug\\cmTC_7a587.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_7a587.dir\\Debug\\\\" /Fd"cmTC_7a587.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "D:\\Program Files\\CMake\\share\\cmake-3.26\\Modules\\CMakeCCompilerABI.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32215 for x64
+          CMakeCCompilerABI.c
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_7a587.dir\\Debug\\\\" /Fd"cmTC_7a587.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "D:\\Program Files\\CMake\\share\\cmake-3.26\\Modules\\CMakeCCompilerABI.c"
+        Link:
+          D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-j0861b\\Debug\\cmTC_7a587.exe" /INCREMENTAL /ILK:"cmTC_7a587.dir\\Debug\\cmTC_7a587.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-j0861b/Debug/cmTC_7a587.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-j0861b/Debug/cmTC_7a587.lib" /MACHINE:X64  /machine:x64 cmTC_7a587.dir\\Debug\\CMakeCCompilerABI.obj
+          cmTC_7a587.vcxproj -> D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-j0861b\\Debug\\cmTC_7a587.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_7a587.dir\\Debug\\cmTC_7a587.tlog\\unsuccessfulbuild".
+          Touching "cmTC_7a587.dir\\Debug\\cmTC_7a587.tlog\\cmTC_7a587.lastbuildstate".
+        Done Building Project "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-j0861b\\cmTC_7a587.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:00.36
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/Program Files/CMake/share/cmake-3.26/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "D:/Program Files/CMake/share/cmake-3.26/Modules/CheckCSourceCompiles.cmake:76 (cmake_check_source_compiles)"
+      - "D:/Program Files/CMake/share/cmake-3.26/Modules/FindThreads.cmake:97 (CHECK_C_SOURCE_COMPILES)"
+      - "D:/Program Files/CMake/share/cmake-3.26/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "CMakeLists.txt:62 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-ltodoa"
+      binary: "D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-ltodoa"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
+      CMAKE_C_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMake/modules"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-ltodoa
+        
+        Run Build Command(s):D:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_68f2f.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.0+6f08c67f3 for .NET Framework
+        Build started 02/03/2023 09:20:54.
+        Included response file: D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
+        
+        Project "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-ltodoa\\cmTC_68f2f.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_68f2f.dir\\Debug\\".
+          Creating directory "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-ltodoa\\Debug\\".
+          Creating directory "cmTC_68f2f.dir\\Debug\\cmTC_68f2f.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_68f2f.dir\\Debug\\cmTC_68f2f.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_68f2f.dir\\Debug\\\\" /Fd"cmTC_68f2f.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-ltodoa\\src.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32215 for x64
+          src.c
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_68f2f.dir\\Debug\\\\" /Fd"cmTC_68f2f.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-ltodoa\\src.c"
+        D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-ltodoa\\src.c(1,10): fatal  error C1083: Cannot open include file: 'pthread.h': No such file or directory [D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-ltodoa\\cmTC_68f2f.vcxproj]
+        Done Building Project "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-ltodoa\\cmTC_68f2f.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-ltodoa\\cmTC_68f2f.vcxproj" (default target) (1) ->
+        (ClCompile target) -> 
+          D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-ltodoa\\src.c(1,10): fatal  error C1083: Cannot open include file: 'pthread.h': No such file or directory [D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-ltodoa\\cmTC_68f2f.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:00.19
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/Program Files/CMake/share/cmake-3.26/Modules/CheckLibraryExists.cmake:71 (try_compile)"
+      - "D:/Program Files/CMake/share/cmake-3.26/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "D:/Program Files/CMake/share/cmake-3.26/Modules/FindThreads.cmake:175 (_threads_check_lib)"
+      - "CMakeLists.txt:62 (find_package)"
+    checks:
+      - "Looking for pthread_create in pthreads"
+    directories:
+      source: "D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-22ph9p"
+      binary: "D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-22ph9p"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
+      CMAKE_C_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMake/modules"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREADS_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-22ph9p
+        
+        Run Build Command(s):D:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_27ebd.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.0+6f08c67f3 for .NET Framework
+        Build started 02/03/2023 09:20:54.
+        Included response file: D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
+        
+        Project "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-22ph9p\\cmTC_27ebd.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_27ebd.dir\\Debug\\".
+          Creating directory "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-22ph9p\\Debug\\".
+          Creating directory "cmTC_27ebd.dir\\Debug\\cmTC_27ebd.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_27ebd.dir\\Debug\\cmTC_27ebd.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_27ebd.dir\\Debug\\\\" /Fd"cmTC_27ebd.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-22ph9p\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32215 for x64
+          CheckFunctionExists.c
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_27ebd.dir\\Debug\\\\" /Fd"cmTC_27ebd.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-22ph9p\\CheckFunctionExists.c"
+        Link:
+          D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-22ph9p\\Debug\\cmTC_27ebd.exe" /INCREMENTAL /ILK:"cmTC_27ebd.dir\\Debug\\cmTC_27ebd.ilk" /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-22ph9p/Debug/cmTC_27ebd.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-22ph9p/Debug/cmTC_27ebd.lib" /MACHINE:X64  /machine:x64 cmTC_27ebd.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-22ph9p\\cmTC_27ebd.vcxproj]
+        Done Building Project "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-22ph9p\\cmTC_27ebd.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-22ph9p\\cmTC_27ebd.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-22ph9p\\cmTC_27ebd.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:00.27
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/Program Files/CMake/share/cmake-3.26/Modules/CheckLibraryExists.cmake:71 (try_compile)"
+      - "D:/Program Files/CMake/share/cmake-3.26/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "D:/Program Files/CMake/share/cmake-3.26/Modules/FindThreads.cmake:176 (_threads_check_lib)"
+      - "CMakeLists.txt:62 (find_package)"
+    checks:
+      - "Looking for pthread_create in pthread"
+    directories:
+      source: "D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-xvhiho"
+      binary: "D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-xvhiho"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
+      CMAKE_C_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMake/modules"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREAD_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-xvhiho
+        
+        Run Build Command(s):D:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_641aa.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.0+6f08c67f3 for .NET Framework
+        Build started 02/03/2023 09:20:55.
+        Included response file: D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
+        
+        Project "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-xvhiho\\cmTC_641aa.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_641aa.dir\\Debug\\".
+          Creating directory "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-xvhiho\\Debug\\".
+          Creating directory "cmTC_641aa.dir\\Debug\\cmTC_641aa.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_641aa.dir\\Debug\\cmTC_641aa.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_641aa.dir\\Debug\\\\" /Fd"cmTC_641aa.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-xvhiho\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32215 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          CheckFunctionExists.c
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_641aa.dir\\Debug\\\\" /Fd"cmTC_641aa.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-xvhiho\\CheckFunctionExists.c"
+        Link:
+          D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-xvhiho\\Debug\\cmTC_641aa.exe" /INCREMENTAL /ILK:"cmTC_641aa.dir\\Debug\\cmTC_641aa.ilk" /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-xvhiho/Debug/cmTC_641aa.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/CMakeScratch/TryCompile-xvhiho/Debug/cmTC_641aa.lib" /MACHINE:X64  /machine:x64 cmTC_641aa.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthread.lib' [D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-xvhiho\\cmTC_641aa.vcxproj]
+        Done Building Project "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-xvhiho\\cmTC_641aa.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-xvhiho\\cmTC_641aa.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          LINK : fatal error LNK1104: cannot open file 'pthread.lib' [D:\\Extra\\[opengl] 3D Cellular Automata\\3D Cellular Automata\\glfw-3.3.8\\CMakeFiles\\CMakeScratch\\TryCompile-xvhiho\\cmTC_641aa.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:00.27
+        
+      exitCode: 1
+...

@@ -4,11 +4,11 @@
 #include <windows.h>
 #include <imagehlp.h>
 
-#define error() errorAndTerminate(__FUNCSIG__, __LINE__)
+#define error() __Error(__FUNCSIG__, __LINE__)
 
-bool errorAndTerminate(const char* func, const int line);
 bool __Init(HMODULE hModule);
 bool __Exit();
+bool __Error(const char* func, const int line);
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID lpvReserved) {
 	//////////////////////////////////////////////////////////////////////////////
@@ -48,13 +48,7 @@ bool __Init(HMODULE hModule) {
 
 	//////////////////////////////////////////////////////////////////////////////
 	// 3. Options
-	SymSetOptions(
-		SYMOPT_EXACT_SYMBOLS
-		| SYMOPT_UNDNAME
-		| SYMOPT_NO_UNQUALIFIED_LOADS
-		| SYMOPT_OVERWRITE
-		| SYMOPT_LOAD_LINES
-	);
+	SymSetOptions(SYMOPT_LOAD_LINES);
 
 	return true;
 }
@@ -72,7 +66,7 @@ bool __Exit() {
 	return true;
 }
 
-bool errorAndTerminate(const char* func, const int line) {
+bool __Error(const char* func, const int line) {
 	int code = GetLastError();
 	char errorMsg[4096] = { {'\0'} };
 	size_t size = FormatMessageA(
@@ -85,11 +79,13 @@ bool errorAndTerminate(const char* func, const int line) {
 		NULL
 	);
 	fprintf(stderr, "Profiling error#%d: %s\n\tat %s.%d\n", code, errorMsg, func, line);
-	::exit(code);
+	//::exit(code);
 	return false;
 }
 
-bool profiler::__GetFuncInfo(FuncID func, FuncInfo& info) {
+void profiler::__GetFuncInfo(FuncID func, FuncInfo& info) {
+	info.id = func;
+
 	//////////////////////////////////////////////////////////////////////////////
 	// https://learn.microsoft.com/en-us/windows/win32/debug/retrieving-symbol-information-by-address
 	// 1. Retrieve Symbol Info
@@ -98,15 +94,23 @@ bool profiler::__GetFuncInfo(FuncID func, FuncInfo& info) {
 	PSYMBOL_INFO pSymbolInfo = (PSYMBOL_INFO)buffer;
 	pSymbolInfo->SizeOfStruct = sizeof(SYMBOL_INFO);
 	pSymbolInfo->MaxNameLen = MAX_SYM_NAME - 1;
-	if (!SymFromAddr(GetCurrentProcess(), (DWORD64)func, &dwDisplacement1, pSymbolInfo))
-		return error();
-
-	//////////////////////////////////////////////////////////////////////////////
-	// 2. Undecorated name
-	CHAR undecoratedName[MAX_SYM_NAME] = { {'\0'} };
-	if (UnDecorateSymbolName(pSymbolInfo->Name, undecoratedName, MAX_SYM_NAME, UNDNAME_COMPLETE) == NULL) {
-		memset(undecoratedName, 0, MAX_SYM_NAME);
-		strcpy_s(undecoratedName, "<error>");
+	if (!SymFromAddr(GetCurrentProcess(), (DWORD64)func, &dwDisplacement1, pSymbolInfo)) {
+		sprintf_s(info.funcNameExt, "SymFromAddr Error (%d)", GetLastError());
+		sprintf_s(info.funcName, "SymFromAddr Error (%d)", GetLastError());
+		// error();
+	}
+	else {
+		strcpy_s(info.funcNameExt, pSymbolInfo->Name);
+		//////////////////////////////////////////////////////////////////////////////
+		// 2. Undecorated name
+		CHAR undecoratedName[MAX_SYM_NAME] = { {'\0'} };
+		if (UnDecorateSymbolName(pSymbolInfo->Name, undecoratedName, MAX_SYM_NAME, UNDNAME_COMPLETE) == NULL) {
+			memset(undecoratedName, 0, MAX_SYM_NAME);
+			sprintf_s(undecoratedName, "UnDecorateSymbolName Error (%d)", GetLastError());
+			// error();
+		}
+		else
+			strcpy_s(info.funcName, undecoratedName);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////
@@ -115,17 +119,13 @@ bool profiler::__GetFuncInfo(FuncID func, FuncInfo& info) {
 	DWORD dwDisplacement2 = 0;
 	IMAGEHLP_LINE64 lineInfo{};
 	lineInfo.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
-	if (!SymGetLineFromAddr64(GetCurrentProcess(), (DWORD64)func, &dwDisplacement2, &lineInfo))
-		return error();
-
-	//////////////////////////////////////////////////////////////////////////////
-	// 4. Load into db
-	info.id = func;
-	strcpy_s(info.fileName, lineInfo.FileName);
-	strcpy_s(info.funcNameDecorated, pSymbolInfo->Name);
-	strcpy_s(info.funcNameUndecorated, undecoratedName);
-	info.fileLine = lineInfo.LineNumber;
-
-	// Return from cache
-	return true;
+	if (!SymGetLineFromAddr64(GetCurrentProcess(), (DWORD64)func, &dwDisplacement2, &lineInfo)) {
+		sprintf_s(info.fileName, "SymGetLineFromAddr64 (%d)", GetLastError());
+		info.fileLine = 0;
+		//error();
+	}
+	else {
+		strcpy_s(info.fileName, lineInfo.FileName);
+		info.fileLine = lineInfo.LineNumber;
+	}
 }

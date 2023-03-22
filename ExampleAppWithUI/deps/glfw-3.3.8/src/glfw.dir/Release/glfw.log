@@ -1,0 +1,18 @@
+﻿  1>Building Custom Rule D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/src/CMakeLists.txt
+  context.c
+  init.c
+  input.c
+  monitor.c
+  vulkan.c
+  window.c
+  win32_init.c
+  win32_joystick.c
+  win32_monitor.c
+  win32_time.c
+  win32_thread.c
+  win32_window.c
+  wgl_context.c
+  egl_context.c
+  osmesa_context.c
+  Generating Code...
+  glfw.vcxproj -> D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\src\Release\glfw3.lib

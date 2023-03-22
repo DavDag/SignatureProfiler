@@ -6,3 +6,4 @@
 **/x64/**
 
 *.vcxproj*
+/ProfilerLib/deps/imgui-1.89.3

@@ -51,8 +51,9 @@ namespace profiler {
 	DLLAPI void FrameEnd();
 	DLLAPI void ClearStats();
 	DLLAPI const FuncInfo& GetFuncInfo(FuncID func);
-	DLLAPI const std::unordered_map<FuncID, FuncInfo>& GetFuncTable();
-	DLLAPI const std::unordered_map<FuncID, StatsEntry>& GetStats();
+	DLLAPI const std::unordered_map<FuncID, FuncInfo>& GetInfoTable();
+	DLLAPI const StatsEntry& GetFuncStats(FuncID func);
+	DLLAPI const std::unordered_map<FuncID, StatsEntry>& GetStatsTable();
 	DLLAPI const std::vector<FrameHistoryEntry>& GetFrameHistory();
 	
 	// Utils

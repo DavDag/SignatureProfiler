@@ -73,9 +73,7 @@ void UsageDisplay::ui(int w, int h) {
 		ImVec2 size = ImGui::CalcTextSize("100%");
 		size.x = ImGui::GetColumnWidth();
 		ImVec2 pos = ImGui::GetCursorScreenPos();
-		ImColor col = (usage < 0.01) ?
-			IM_COL32(0, 255, 0, 128)
-			: IM_COL32(255, 255 * (1.0 - usage), 0, 128);
+		ImU32 col = (usage < 0.01) ? IM_COL32(0, 255, 0, 128) : IM_COL32(255, 255 * (1.0 - usage), 0, 128);
 		draw_list->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), col);
 		if (this->_runningCoreInd == core)
 			draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y), IM_COL32_WHITE, 0, 0, 2.0f);

@@ -35,8 +35,6 @@ void profiler::ImGuiRenderFrameHistory(
 		///////////////////////////////////////////////////////////////
 		// 0. Variables
 		static float from = 0, to = 1; // selection range
-		constexpr float LEVEL_H = 25;  // event height
-		constexpr int MAX_LEVEL = 8;   // max level
 		if (ImGui::IsWindowAppearing()) {
 			from = 0;
 			to = 1;
@@ -54,11 +52,13 @@ void profiler::ImGuiRenderFrameHistory(
 		///////////////////////////////////////////////////////////////
 		// Frame overview chart
 		{
+			constexpr float levelH = 25;
+			constexpr int maxLevel = 8;
 			float starty = ImGui::GetCursorPosY();
 
 			// 1. Background Rect
 			ImVec2 bgRectMin = ImVec2(0, starty);
-			ImVec2 bgRectMax = ImVec2(w, starty + LEVEL_H * MAX_LEVEL);
+			ImVec2 bgRectMax = ImVec2(w, starty + levelH * maxLevel);
 			drawList->AddRectFilled(bgRectMin, bgRectMax, IM_COL32(128, 128, 128, 64), 0);
 
 			// 2. "Frame" Rect (for reference)
@@ -66,8 +66,8 @@ void profiler::ImGuiRenderFrameHistory(
 			TimeStamp frameEnd = history[history.size() - 1].time;
 			DeltaNs frameDuration = ComputeDelta(frameBeg, frameEnd);
 			drawList->AddRectFilled(
-				ImVec2(0, starty + 0 * LEVEL_H),
-				ImVec2(w, starty + 1 * LEVEL_H),
+				ImVec2(0, starty + 0 * levelH),
+				ImVec2(w, starty + 1 * levelH),
 				IM_COL32(64, 64, 64, 255),
 				0
 			);
@@ -83,19 +83,17 @@ void profiler::ImGuiRenderFrameHistory(
 					const auto& begEvent = stack.top();
 					stack.pop();
 					int level = (int)stack.size() + 1;
-					if (level <= MAX_LEVEL) {
+					if (level <= maxLevel) {
 						DeltaNs off = ComputeDelta(frameBeg, begEvent.time);
 						DeltaNs dur = ComputeDelta(begEvent.time, ev.time);
 						float beg = (off) / (float)frameDuration;
 						float end = (off + dur) / (float)frameDuration;
 						const auto& info = GetFuncInfo(begEvent.id);
 						Crc32 hash = ComputeCRC32(info.funcName, strlen(info.funcName));
-						drawList->AddRectFilled(
-							ImVec2(beg * w, starty + (level + 0) * LEVEL_H),
-							ImVec2(end * w, starty + (level + 1) * LEVEL_H),
-							IM_COL32((hash & 0x000000ff), (hash & 0x0000ff00), (hash & 0x00ff0000), 255),
-							0
-						);
+						ImU32 color = IM_COL32((hash & 0x000000ff), (hash & 0x0000ff00), (hash & 0x00ff0000), 255);
+						ImVec2 posmin(beg * w, starty + (level + 0) * levelH);
+						ImVec2 posmax(end * w, starty + (level + 1) * levelH);
+						drawList->AddRectFilled(posmin, posmax, color, 0);
 					}
 				}
 			}
@@ -103,18 +101,18 @@ void profiler::ImGuiRenderFrameHistory(
 			// 4. Selection Rect
 			static float oldX = 0; // selection drag origin x
 			if (ImGui::IsMouseHoveringRect(bgRectMin, bgRectMax)) {
-				// Single click (reset <from>)
+				// Single click: setup for drag
 				if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
 					oldX = ImGui::GetMousePos().x;
 					from = oldX / w;
 					from = (from < 0) ? 0 : from;
 				}
-				// Double click (select all)
+				// Double click: reset selection (0,1)
 				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
 					from = 0;
 					to = 1;
 				}
-				// Drag (move <to>)
+				// Drag: update selection
 				if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
 					float deltaX = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left).x;
 					to = (oldX + deltaX) / w;
@@ -122,31 +120,39 @@ void profiler::ImGuiRenderFrameHistory(
 					if (to <= 0.02) to = 0;
 					if (to >= (1 - 0.01)) to = 1;
 				}
-				// Wheel (move <from> <to>)
+				// Wheel: move selection
 				ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY);
-				if (ImGui::GetIO().MouseWheel != 0) {
-					from += 0.01 * ImGui::GetIO().MouseWheel;
-					to   += 0.01 * ImGui::GetIO().MouseWheel;
-					if (from >= 1) from = 1;
-					if (from <= 0) from = 0;
-					if (to >= 1) to = 1;
-					if (to <= 0) to = 0;
+				if (float wheel = ImGui::GetIO().MouseWheel; wheel != 0) {
+					from += 0.0025 * wheel;
+					to   += 0.0025 * wheel;
 				}
+				// Clamp values
+				if (from >= 1) from = 1;
+				if (from <= 0) from = 0;
+				if (to >= 1) to = 1;
+				if (to <= 0) to = 0;
 			}
 			if (from <= 0.001 && to >= 0.999) {
 				// Do not draw selection since everything would be selected
 			}
 			else {
 				ImVec2 selRectMin = ImVec2(w * from, starty);
-				ImVec2 selRectMax = ImVec2(w * to, starty + LEVEL_H * MAX_LEVEL);
+				ImVec2 selRectMax = ImVec2(w * to, starty + levelH * maxLevel);
 				drawList->AddRectFilled(selRectMin, selRectMax, IM_COL32(0, 0, 128, 64), 0);
 			}
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + levelH * maxLevel);
 		}
+
+		///////////////////////////////////////////////////////////////
+		ImGui::SeparatorText("");
 
 		///////////////////////////////////////////////////////////////
 		// Chart for 'selection'
 		{
-			float starty = ImGui::GetCursorPosY() + LEVEL_H * MAX_LEVEL + 32;
+			constexpr float levelH = 50;
+			constexpr int maxLevel = 12;
+			float starty = ImGui::GetCursorPosY();
 
 			// 0. Range
 			float selFrom = (to > from) ? from : to;
@@ -154,22 +160,22 @@ void profiler::ImGuiRenderFrameHistory(
 
 			// 1. Background Rect
 			ImVec2 bgRectMin = ImVec2(0, starty);
-			ImVec2 bgRectMax = ImVec2(w, starty + LEVEL_H * MAX_LEVEL);
+			ImVec2 bgRectMax = ImVec2(w, starty + levelH * maxLevel);
 			drawList->AddRectFilled(bgRectMin, bgRectMax, IM_COL32(128, 128, 128, 64), 0);
 
 			// 2. "Frame" Rect (for reference)
 			TimeStamp frameBeg = history[0].time;
 			TimeStamp frameEnd = history[history.size() - 1].time;
 			DeltaNs frameDuration = ComputeDelta(frameBeg, frameEnd);
-			DeltaNs frameBegNs = frameDuration * selFrom;
-			DeltaNs frameEndNs = frameDuration * selTo;
-			frameDuration *= (selTo - selFrom);
 			drawList->AddRectFilled(
-				ImVec2(0, starty + 0 * LEVEL_H),
-				ImVec2(w, starty + 1 * LEVEL_H),
+				ImVec2(0, starty + 0 * levelH),
+				ImVec2(w, starty + 1 * levelH),
 				IM_COL32(64, 64, 64, 255),
 				0
 			);
+			DeltaNs zoomBegNs = frameDuration * selFrom;
+			DeltaNs zoomEndNs = frameDuration * selTo;
+			DeltaNs zoomDuration = zoomEndNs - zoomBegNs;
 
 			// 3. Events Rects
 			static std::stack<profiler::FrameHistoryEntry> stack{}; // exploration stack
@@ -182,61 +188,66 @@ void profiler::ImGuiRenderFrameHistory(
 					const auto& begEvent = stack.top();
 					stack.pop();
 					int level = (int)stack.size() + 1;
-					if (level <= MAX_LEVEL) {
-						DeltaNs off = ComputeDelta(frameBeg, begEvent.time) - frameBegNs;
-						DeltaNs dur = ComputeDelta(begEvent.time, ev.time);
-						if (off + dur < 0) continue;
-						if (off > frameDuration) continue;
-						if (off < 0) off = 0;
-						if (off + dur > frameDuration) dur = frameDuration - off;
-						float beg = (off) / (float)frameDuration;
-						float end = (off + dur) / (float)frameDuration;
+					if (level <= maxLevel) {
+						DeltaNs absOff = ComputeDelta(frameBeg, begEvent.time);
+						DeltaNs relOff = absOff - zoomBegNs;
+						DeltaNs absDur = ComputeDelta(begEvent.time, ev.time);
+						DeltaNs relDur = absDur;
+						if (relOff < 0) {
+							relDur += relOff;
+							relOff = 0;
+						}
+						if (relOff + relDur > zoomDuration) {
+							relDur = zoomDuration - relOff;
+						}
+						float beg = (relOff) / (float)zoomDuration;
+						float end = (relOff + relDur) / (float)zoomDuration + 0.001;
 						const auto& info = GetFuncInfo(begEvent.id);
 						Crc32 hash = ComputeCRC32(info.funcName, strlen(info.funcName));
-						drawList->AddRectFilled(
-							ImVec2(beg * w, starty + (level + 0) * LEVEL_H),
-							ImVec2(end * w, starty + (level + 1) * LEVEL_H),
-							IM_COL32((hash & 0x000000ff), (hash & 0x0000ff00), (hash & 0x00ff0000), 255),
-							0
-						);
+						ImU32 color = IM_COL32((hash & 0x000000ff), (hash & 0x0000ff00), (hash & 0x00ff0000), 255);
+						ImVec2 rectMin(beg * w, starty + (level + 0) * levelH);
+						ImVec2 rectMax(end * w, starty + (level + 1) * levelH);
+						drawList->AddRectFilled(rectMin, rectMax, color, 0);
+						if (ImGui::IsMouseHoveringRect(rectMin, rectMax)) {
+							ImGui::SetTooltip("%s", info.funcName);
+							drawList->AddRect(rectMin, rectMax, IM_COL32(255, 255, 255, 255), 0);
+						}
+						ImVec2 textRectMin = ImVec2(rectMin.x + 2, rectMin.y + 2);
+						ImVec2 textRectMax = ImVec2(rectMax.x - 2, rectMax.y - 2);
+						ImGui::RenderTextClipped(textRectMin, textRectMax, info.funcName, nullptr, nullptr, ImVec2(0.5, 0.5));
 					}
 				}
 			}
-		}
 
-
-		///////////////////////////////////////////////////////////////
-		// Debug
-		if (false) {
-			std::vector<TimeStamp> endings(history.size());
-			std::stack<int> stack;
-			for (int i = 0; i < history.size(); i++) {
-				const auto& ev = history[i];
-				if (ev.id == EmptyFuncID) {
-					endings[stack.top()] = ev.time;
-					stack.pop();
+			// 4. Gestures
+			static float oldX = 0; // drag origin x
+			if (ImGui::IsMouseHoveringRect(bgRectMin, bgRectMax)) {
+				// Single click: setup for drag
+				if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+					oldX = ImGui::GetMousePos().x;
 				}
-				else {
-					stack.push(i);
+				// Drag: move selection
+				if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+					float deltaX = -ImGui::GetMouseDragDelta().x;
+					ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
+					oldX = deltaX;
+					//
+					float delta = (deltaX / w) * (selTo - selFrom);
+					from += delta;
+					to += delta;
 				}
-			}
-			TimeStamp frameBeg = history[0].time;
-			TimeStamp frameEnd = history[history.size()-1].time;
-			DeltaNs frameDelta = ComputeDelta(frameBeg, frameEnd);
-			ImGui::Text("%*.s%-*.*s: %8lld (ns)", 0, "", 32, 32, "Frame", frameDelta);
-			int level = 1;
-			for (int i = 0; i < history.size(); i++) {
-				const auto& ev = history[i];
-				if (ev.id == EmptyFuncID) {
-					--level;
+				// Wheel: zoom at mouse coords
+				if (float wheel = ImGui::GetIO().MouseWheel; wheel != 0) {
+					float bias = ImGui::GetMousePos().x / w;
+					float center = bias * (selTo - selFrom) + selFrom;
+					from += (center - from) * 0.25 * wheel;
+					to   += (center - to  ) * 0.25 * wheel;
 				}
-				else {
-					const auto& info = GetFuncInfo(ev.id);
-					DeltaNs delta = ComputeDelta(ev.time, endings[i]);
-					DeltaNs fromBeg = ComputeDelta(frameBeg, ev.time);
-					ImGui::Text("%*.s%-*.*s: %8lld (ns)", level, "", 32-level, 32-level, info.funcName, delta);
-					++level;
-				}
+				// Clamp values
+				if (from >= 1) from = 1;
+				if (from <= 0) from = 0;
+				if (to >= 1) to = 1;
+				if (to <= 0) to = 0;
 			}
 		}
 	}

@@ -3,8 +3,8 @@
 static bool gEnabled = false;
 thread_local int gFrameHistoryIndex = 0;
 thread_local std::vector<profiler::FrameHistoryEntry> gFrameHistory[2] = { {} };
-thread_local std::unordered_map<profiler::FuncID, profiler::StatsEntry> gStats{};
-thread_local std::unordered_map<profiler::FuncID, profiler::FuncInfo> gFuncDatabase{};
+thread_local std::unordered_map<profiler::FuncID, profiler::StatsEntry> gStatsDatabase{};
+thread_local std::unordered_map<profiler::FuncID, profiler::FuncInfo> gInfoDatabase{};
 
 struct StackEntry {
 	profiler::FuncID func;
@@ -64,9 +64,9 @@ void profiler::FrameEnd() {
 			TimeStamp end = e.time;
 			DeltaNs delta = ComputeDelta(beg, end);
 			gStack.pop_back();
-			if (!gStats.contains(id))
-				gStats.insert({ id, {} });
-			profiler::StatsEntry& entry = gStats.at(id);
+			if (!gStatsDatabase.contains(id))
+				gStatsDatabase.insert({ id, {} });
+			profiler::StatsEntry& entry = gStatsDatabase.at(id);
 			entry.invocationCount++;
 			entry.nsMin = std::min(entry.nsMin, delta);
 			entry.nsMax = std::max(entry.nsMax, delta);
@@ -76,24 +76,28 @@ void profiler::FrameEnd() {
 }
 
 void profiler::ClearStats() {
-	gStats.clear();
+	gStatsDatabase.clear();
 }
 
 const profiler::FuncInfo& profiler::GetFuncInfo(FuncID func) {
-	if (!gFuncDatabase.contains(func)) {
+	if (!gInfoDatabase.contains(func)) {
 		FuncInfo info{};
 		__GetFuncInfo(func, info);
-		gFuncDatabase.insert({ func, info });
+		gInfoDatabase.insert({ func, info });
 	}
-	return gFuncDatabase.at(func);
+	return gInfoDatabase.at(func);
 }
 
-const std::unordered_map<profiler::FuncID, profiler::FuncInfo>& profiler::GetFuncTable() {
-	return gFuncDatabase;
+const std::unordered_map<profiler::FuncID, profiler::FuncInfo>& profiler::GetInfoTable() {
+	return gInfoDatabase;
 }
 
-const std::unordered_map<profiler::FuncID, profiler::StatsEntry>& profiler::GetStats() {
-	return gStats;
+const profiler::StatsEntry& profiler::GetFuncStats(FuncID func) {
+	return gStatsDatabase.at(func);
+}
+
+const std::unordered_map<profiler::FuncID, profiler::StatsEntry>& profiler::GetStatsTable() {
+	return gStatsDatabase;
 }
 
 const std::vector<profiler::FrameHistoryEntry>& profiler::GetFrameHistory() {
@@ -103,7 +107,7 @@ const std::vector<profiler::FrameHistoryEntry>& profiler::GetFrameHistory() {
 //////////////////////////////////////////////////////////////////////////////
 
 void profiler::LogStats() {
-	for (const auto& p : gStats) {
+	for (const auto& p : gStatsDatabase) {
 		auto funcId = p.first;
 		const auto& data = p.second;
 		const auto& funcInfo = profiler::GetFuncInfo(funcId);
@@ -128,7 +132,7 @@ void profiler::LogHistory() {
 			const auto& funcInfo = profiler::GetFuncInfo(e.id);
 			printf(
 				"%*.s[+] %-s.%-3d\n",
-				(unsigned int) callstack.size()-1,
+				(unsigned int)callstack.size() - 1,
 				"",
 				funcInfo.funcName,
 				funcInfo.fileLine

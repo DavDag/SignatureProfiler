@@ -52,9 +52,9 @@ void profiler::ImGuiRenderFrameHistory(
 		///////////////////////////////////////////////////////////////
 		// Frame overview chart
 		{
-			constexpr float levelH = 25;
+			constexpr float levelH = 10;
 			constexpr int maxLevel = 8;
-			float starty = ImGui::GetCursorPosY();
+			float starty = ImGui::GetCursorPosY() + 24;
 
 			// 1. Background Rect
 			ImVec2 bgRectMin = ImVec2(0, starty);
@@ -98,7 +98,24 @@ void profiler::ImGuiRenderFrameHistory(
 				}
 			}
 
-			// 4. Selection Rect
+			// 4. Time lines
+			constexpr int timeLinesCount = 4;
+			int timeStepNs = frameDuration / (timeLinesCount+1);
+			for (int i = 0; i < timeLinesCount; ++i) {
+				DeltaNs timeNs = timeStepNs * (i+1);
+				float timePercentage = timeNs / (float)frameDuration;
+				ImVec2 lineMin = ImVec2(timePercentage * w, starty +        0 * levelH);
+				ImVec2 lineMax = ImVec2(timePercentage * w, starty + maxLevel * levelH);
+				drawList->AddLine(lineMin, lineMax, IM_COL32(128, 128, 128, 255));
+				//
+				char buff[64] = { {'\0'} };
+				int n = sprintf_s(buff, "%2.1f (ms)", timeNs / 1'000.f);
+				ImVec2 textSize = ImGui::CalcTextSize(buff, buff + n);
+				ImVec2 textPos = ImVec2(lineMin.x - textSize.x / 2, lineMin.y - textSize.y);
+				ImGui::RenderText(textPos, buff, buff + n);
+			}
+
+			// 5. Selection Rect
 			static float oldX = 0; // selection drag origin x
 			if (ImGui::IsMouseHoveringRect(bgRectMin, bgRectMax)) {
 				// Single click: setup for drag
@@ -127,10 +144,10 @@ void profiler::ImGuiRenderFrameHistory(
 					to   += 0.0025 * wheel;
 				}
 				// Clamp values
-				if (from >= 1) from = 1;
-				if (from <= 0) from = 0;
-				if (to >= 1) to = 1;
-				if (to <= 0) to = 0;
+				from = std::min(from, 1.f);
+				from = std::max(from, 0.f);
+				to = std::min(to, 1.f);
+				to = std::max(to, 0.f);
 			}
 			if (from <= 0.001 && to >= 0.999) {
 				// Do not draw selection since everything would be selected
@@ -141,18 +158,18 @@ void profiler::ImGuiRenderFrameHistory(
 				drawList->AddRectFilled(selRectMin, selRectMax, IM_COL32(0, 0, 128, 64), 0);
 			}
 
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + levelH * maxLevel);
+			ImGui::SetCursorPosY(starty + levelH * maxLevel);
 		}
 
 		///////////////////////////////////////////////////////////////
-		ImGui::SeparatorText("");
+		ImGui::Spacing();
 
 		///////////////////////////////////////////////////////////////
 		// Chart for 'selection'
 		{
 			constexpr float levelH = 50;
 			constexpr int maxLevel = 12;
-			float starty = ImGui::GetCursorPosY();
+			float starty = ImGui::GetCursorPosY() + 24;
 
 			// 0. Range
 			float selFrom = (to > from) ? from : to;
@@ -219,7 +236,26 @@ void profiler::ImGuiRenderFrameHistory(
 				}
 			}
 
-			// 4. Gestures
+			// 4. Time lines
+			int timeRoundingNs = 100; // ~0.1ms
+			int timeLinesCount = zoomDuration / timeRoundingNs + 1;
+			timeRoundingNs *= timeLinesCount / 8 + 1; // at least 1
+			DeltaNs timeBeg = (zoomBegNs - (zoomBegNs % timeRoundingNs));
+			for (int i = 0; i < timeLinesCount; ++i) {
+				DeltaNs timeNs = timeBeg + timeRoundingNs * (i + 1);
+				float timePercentage = (timeNs - zoomBegNs) / (float)zoomDuration;
+				ImVec2 lineMin = ImVec2(timePercentage * w, starty +        0 * levelH);
+				ImVec2 lineMax = ImVec2(timePercentage * w, starty + maxLevel * levelH);
+				drawList->AddLine(lineMin, lineMax, IM_COL32(128, 128, 128, 255));
+				//
+				char buff[64] = { {'\0'} };
+				int n = sprintf_s(buff, "%2.1f (ms)", timeNs / 1'000.f);
+				ImVec2 textSize = ImGui::CalcTextSize(buff, buff + n);
+				ImVec2 textPos = ImVec2(lineMin.x - textSize.x / 2, lineMin.y - textSize.y);
+				ImGui::RenderText(textPos, buff, buff + n);
+			}
+
+			// 5. Gestures
 			static float oldX = 0; // drag origin x
 			if (ImGui::IsMouseHoveringRect(bgRectMin, bgRectMax)) {
 				// Single click: setup for drag
@@ -244,11 +280,13 @@ void profiler::ImGuiRenderFrameHistory(
 					to   += (center - to  ) * 0.25 * wheel;
 				}
 				// Clamp values
-				if (from >= 1) from = 1;
-				if (from <= 0) from = 0;
-				if (to >= 1) to = 1;
-				if (to <= 0) to = 0;
+				from = std::min(from, 1.f);
+				from = std::max(from, 0.f);
+				to = std::min(to, 1.f);
+				to = std::max(to, 0.f);
 			}
+
+			ImGui::SetCursorPosY(starty + levelH * maxLevel);
 		}
 	}
 	ImGui::End();

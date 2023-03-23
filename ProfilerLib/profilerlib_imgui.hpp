@@ -11,6 +11,33 @@ namespace profiler {
 		const std::vector<FrameHistoryEntry>& history,
 		int screenW, int screenH
 	);
+
+	namespace internal {
+		void __DrawFuncRect(
+			profiler::FuncID func,
+			DeltaNs funcOffset,
+			DeltaNs funcDuration,
+			DeltaNs timeFrameDuration,
+			float totalW,
+			float startY,
+			int funcLevel,
+			float levelHeight,
+			bool showTooltip = false,
+			bool showLabel = false
+		);
+		
+		void __DrawTimeLines(
+			int timeLinesMax,
+			profiler::DeltaNs timeRounding,
+			profiler::DeltaNs timeFrameDuration,
+			profiler::DeltaNs timeFrameBeg,
+			float totalW,
+			float lineStartY,
+			float lineHeight,
+			const char* textFormat = "%2.1f(ms)",
+			ImU32 lineColor = IM_COL32(128, 128, 128, 255)
+		);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -61,16 +88,10 @@ void profiler::ImGuiRenderFrameHistory(
 			ImVec2 bgRectMax = ImVec2(w, starty + levelH * maxLevel);
 			drawList->AddRectFilled(bgRectMin, bgRectMax, IM_COL32(128, 128, 128, 64), 0);
 
-			// 2. "Frame" Rect (for reference)
+			// 2. Frame vars
 			TimeStamp frameBeg = history[0].time;
 			TimeStamp frameEnd = history[history.size() - 1].time;
 			DeltaNs frameDuration = ComputeDelta(frameBeg, frameEnd);
-			drawList->AddRectFilled(
-				ImVec2(0, starty + 0 * levelH),
-				ImVec2(w, starty + 1 * levelH),
-				IM_COL32(64, 64, 64, 255),
-				0
-			);
 
 			// 3. Events Rects
 			static std::stack<profiler::FrameHistoryEntry> stack{}; // exploration stack
@@ -82,38 +103,17 @@ void profiler::ImGuiRenderFrameHistory(
 				else {
 					const auto& begEvent = stack.top();
 					stack.pop();
-					int level = (int)stack.size() + 1;
+					int level = (int)stack.size();
 					if (level <= maxLevel) {
 						DeltaNs off = ComputeDelta(frameBeg, begEvent.time);
 						DeltaNs dur = ComputeDelta(begEvent.time, ev.time);
-						float beg = (off) / (float)frameDuration;
-						float end = (off + dur) / (float)frameDuration;
-						const auto& info = GetFuncInfo(begEvent.id);
-						Crc32 hash = ComputeCRC32(info.funcName, strlen(info.funcName));
-						ImU32 color = IM_COL32((hash & 0x000000ff), (hash & 0x0000ff00), (hash & 0x00ff0000), 255);
-						ImVec2 posmin(beg * w, starty + (level + 0) * levelH);
-						ImVec2 posmax(end * w, starty + (level + 1) * levelH);
-						drawList->AddRectFilled(posmin, posmax, color, 0);
+						internal::__DrawFuncRect(begEvent.id, off, dur, frameDuration, w, starty, level, levelH, false, false);
 					}
 				}
 			}
 
 			// 4. Time lines
-			constexpr int timeLinesCount = 4;
-			int timeStepNs = frameDuration / (timeLinesCount+1);
-			for (int i = 0; i < timeLinesCount; ++i) {
-				DeltaNs timeNs = timeStepNs * (i+1);
-				float timePercentage = timeNs / (float)frameDuration;
-				ImVec2 lineMin = ImVec2(timePercentage * w, starty +        0 * levelH);
-				ImVec2 lineMax = ImVec2(timePercentage * w, starty + maxLevel * levelH);
-				drawList->AddLine(lineMin, lineMax, IM_COL32(128, 128, 128, 255));
-				//
-				char buff[64] = { {'\0'} };
-				int n = sprintf_s(buff, "%2.1f (ms)", timeNs / 1'000.f);
-				ImVec2 textSize = ImGui::CalcTextSize(buff, buff + n);
-				ImVec2 textPos = ImVec2(lineMin.x - textSize.x / 2, lineMin.y - textSize.y);
-				ImGui::RenderText(textPos, buff, buff + n);
-			}
+			internal::__DrawTimeLines(6, 1000, frameDuration, 0, w, starty, maxLevel * levelH);
 
 			// 5. Selection Rect
 			static float oldX = 0; // selection drag origin x
@@ -180,16 +180,10 @@ void profiler::ImGuiRenderFrameHistory(
 			ImVec2 bgRectMax = ImVec2(w, starty + levelH * maxLevel);
 			drawList->AddRectFilled(bgRectMin, bgRectMax, IM_COL32(128, 128, 128, 64), 0);
 
-			// 2. "Frame" Rect (for reference)
+			// 2. Frame vars (zoomed)
 			TimeStamp frameBeg = history[0].time;
 			TimeStamp frameEnd = history[history.size() - 1].time;
 			DeltaNs frameDuration = ComputeDelta(frameBeg, frameEnd);
-			drawList->AddRectFilled(
-				ImVec2(0, starty + 0 * levelH),
-				ImVec2(w, starty + 1 * levelH),
-				IM_COL32(64, 64, 64, 255),
-				0
-			);
 			DeltaNs zoomBegNs = frameDuration * selFrom;
 			DeltaNs zoomEndNs = frameDuration * selTo;
 			DeltaNs zoomDuration = zoomEndNs - zoomBegNs;
@@ -204,11 +198,11 @@ void profiler::ImGuiRenderFrameHistory(
 				else {
 					const auto& begEvent = stack.top();
 					stack.pop();
-					int level = (int)stack.size() + 1;
+					int level = (int)stack.size();
 					if (level <= maxLevel) {
 						DeltaNs absOff = ComputeDelta(frameBeg, begEvent.time);
-						DeltaNs relOff = absOff - zoomBegNs;
 						DeltaNs absDur = ComputeDelta(begEvent.time, ev.time);
+						DeltaNs relOff = absOff - zoomBegNs;
 						DeltaNs relDur = absDur;
 						if (relOff < 0) {
 							relDur += relOff;
@@ -217,43 +211,13 @@ void profiler::ImGuiRenderFrameHistory(
 						if (relOff + relDur > zoomDuration) {
 							relDur = zoomDuration - relOff;
 						}
-						float beg = (relOff) / (float)zoomDuration;
-						float end = (relOff + relDur) / (float)zoomDuration + 0.001;
-						const auto& info = GetFuncInfo(begEvent.id);
-						Crc32 hash = ComputeCRC32(info.funcName, strlen(info.funcName));
-						ImU32 color = IM_COL32((hash & 0x000000ff), (hash & 0x0000ff00), (hash & 0x00ff0000), 255);
-						ImVec2 rectMin(beg * w, starty + (level + 0) * levelH);
-						ImVec2 rectMax(end * w, starty + (level + 1) * levelH);
-						drawList->AddRectFilled(rectMin, rectMax, color, 0);
-						if (ImGui::IsMouseHoveringRect(rectMin, rectMax)) {
-							ImGui::SetTooltip("%s", info.funcName);
-							drawList->AddRect(rectMin, rectMax, IM_COL32(255, 255, 255, 255), 0);
-						}
-						ImVec2 textRectMin = ImVec2(rectMin.x + 2, rectMin.y + 2);
-						ImVec2 textRectMax = ImVec2(rectMax.x - 2, rectMax.y - 2);
-						ImGui::RenderTextClipped(textRectMin, textRectMax, info.funcName, nullptr, nullptr, ImVec2(0.5, 0.5));
+						internal::__DrawFuncRect(begEvent.id, relOff, relDur, zoomDuration, w, starty, level, levelH, true, true);
 					}
 				}
 			}
 
 			// 4. Time lines
-			int timeRoundingNs = 100; // ~0.1ms
-			int timeLinesCount = zoomDuration / timeRoundingNs + 1;
-			timeRoundingNs *= timeLinesCount / 8 + 1; // at least 1
-			DeltaNs timeBeg = (zoomBegNs - (zoomBegNs % timeRoundingNs));
-			for (int i = 0; i < timeLinesCount; ++i) {
-				DeltaNs timeNs = timeBeg + timeRoundingNs * (i + 1);
-				float timePercentage = (timeNs - zoomBegNs) / (float)zoomDuration;
-				ImVec2 lineMin = ImVec2(timePercentage * w, starty +        0 * levelH);
-				ImVec2 lineMax = ImVec2(timePercentage * w, starty + maxLevel * levelH);
-				drawList->AddLine(lineMin, lineMax, IM_COL32(128, 128, 128, 255));
-				//
-				char buff[64] = { {'\0'} };
-				int n = sprintf_s(buff, "%2.1f (ms)", timeNs / 1'000.f);
-				ImVec2 textSize = ImGui::CalcTextSize(buff, buff + n);
-				ImVec2 textPos = ImVec2(lineMin.x - textSize.x / 2, lineMin.y - textSize.y);
-				ImGui::RenderText(textPos, buff, buff + n);
-			}
+			internal::__DrawTimeLines(4, 100, zoomDuration, zoomBegNs, w, starty, maxLevel * levelH);
 
 			// 5. Gestures
 			static float oldX = 0; // drag origin x
@@ -267,7 +231,6 @@ void profiler::ImGuiRenderFrameHistory(
 					float deltaX = -ImGui::GetMouseDragDelta().x;
 					ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
 					oldX = deltaX;
-					//
 					float delta = (deltaX / w) * (selTo - selFrom);
 					from += delta;
 					to += delta;
@@ -294,4 +257,73 @@ void profiler::ImGuiRenderFrameHistory(
 	///////////////////////////////////////////////////////////////
 	// Re-enable profiler (if needed)
 	if (wasEnabled) profiler::Enable();
+}
+
+void profiler::internal::__DrawFuncRect(
+	profiler::FuncID func,
+	DeltaNs funcOffset,
+	DeltaNs funcDuration,
+	DeltaNs timeFrameDuration,
+	float totalW,
+	float startY,
+	int funcLevel,
+	float levelHeight,
+	bool showTooltip /*= false*/,
+	bool showLabel /*= false*/
+) {
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+	float beg = (funcOffset               ) / (float)timeFrameDuration;
+	float end = (funcOffset + funcDuration) / (float)timeFrameDuration;
+	end = std::max(end, 0.001f);
+	const auto& info = profiler::GetFuncInfo(func);
+	Crc32 hash = ComputeCRC32(info.funcName, strlen(info.funcName));
+	ImU32 color = IM_COL32((hash & 0x000000ff), (hash & 0x0000ff00), (hash & 0x00ff0000), 255);
+	ImVec2 posmin(beg * totalW, startY + (funcLevel + 0) * levelHeight);
+	ImVec2 posmax(end * totalW, startY + (funcLevel + 1) * levelHeight);
+	// Rect
+	drawList->AddRectFilled(posmin, posmax, color, 0);
+	// Tooltip
+	if (showTooltip) {
+		if (ImGui::IsMouseHoveringRect(posmin, posmax)) {
+			ImGui::SetTooltip("%s", info.funcName);
+			drawList->AddRect(posmin, posmax, IM_COL32(255, 255, 255, 255), 0);
+		}
+	}
+	// Label
+	if (showLabel) {
+		ImVec2 textmin = ImVec2(posmin.x + 2, posmin.y + 2);
+		ImVec2 textmax = ImVec2(posmax.x - 2, posmax.y - 2);
+		ImGui::RenderTextClipped(textmin, textmax, info.funcName, nullptr, nullptr, ImVec2(0.5, 0.5));
+	}
+}
+
+void profiler::internal::__DrawTimeLines(
+	int timeLinesMax,
+	profiler::DeltaNs timeRounding,
+	profiler::DeltaNs timeFrameDuration,
+	profiler::DeltaNs timeFrameBeg,
+	float totalW,
+	float lineStartY,
+	float lineHeight,
+	const char* textFormat /*= "%2.1f(ms)"*/,
+	ImU32 lineColor /*= IM_COL32(128, 128, 128, 255)*/
+) {
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+	static char buff[64] = { {'\0'} };
+	int timeLinesCount = (timeFrameDuration / timeRounding) + 1;
+	profiler::DeltaNs timeRoundingRel = timeRounding * ((timeLinesCount / timeLinesMax) + 1);
+	profiler::DeltaNs timeFrameBegRel = timeFrameBeg - (timeFrameBeg % timeRoundingRel);
+	for (int i = 0; i < timeLinesCount; ++i) {
+		profiler::DeltaNs timeNs = timeFrameBegRel + timeRoundingRel * (i + 1);
+		float timePercentage = (timeNs - timeFrameBeg) / (float)timeFrameDuration;
+		// Line
+		ImVec2 lineMin = ImVec2(timePercentage * totalW, lineStartY);
+		ImVec2 lineMax = ImVec2(timePercentage * totalW, lineStartY + lineHeight);
+		drawList->AddLine(lineMin, lineMax, lineColor);
+		// Text
+		int n = sprintf_s(buff, textFormat, timeNs / 1'000.f);
+		ImVec2 textSize = ImGui::CalcTextSize(buff, buff + n);
+		ImVec2 textPos = ImVec2(lineMin.x - textSize.x / 2, lineMin.y - textSize.y);
+		ImGui::RenderText(textPos, buff, buff + n);
+	}
 }

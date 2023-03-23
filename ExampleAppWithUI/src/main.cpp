@@ -67,8 +67,7 @@ int WinMain(int argc, char* argv[])
     profiler::Enable();
     ///////////////////////
     glfwSwapInterval(1);
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
         ///////////////////////
         profiler::Disable();
         if (!app.isFrozen())

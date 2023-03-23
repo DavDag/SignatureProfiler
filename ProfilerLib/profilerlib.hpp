@@ -37,6 +37,7 @@ namespace profiler {
 		DeltaNs nsTot = 0;
 		DeltaNs nsMin = 1'000'000'000;
 		DeltaNs nsMax = 0;
+		DeltaNs nsAvg = 0;
 		int invocationCount = 0;
 	};
 	struct FrameHistoryEntry {
@@ -59,9 +60,14 @@ namespace profiler {
 	// Utils
 	DLLAPI void LogStats();
 	DLLAPI void LogHistory();
+
+	// Extra
+	using CRC32 = unsigned int;
+	DLLAPI CRC32 ComputeCRC32(const char* data, int len, CRC32 crc = 0);
+	constexpr CRC32 __ComputeCRC32(const char* data, int len, CRC32 crc = 0);
 	
 	// Internals
-	void __GetFuncInfo(FuncID func, profiler::FuncInfo& info);
+	void __GetFuncInfo(FuncID func, FuncInfo& info);
 }
 
 // [NECESSARY] Since they're referenced inside 'hooks.asm'

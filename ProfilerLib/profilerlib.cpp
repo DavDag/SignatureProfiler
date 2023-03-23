@@ -71,6 +71,7 @@ void profiler::FrameEnd() {
 			entry.nsMin = std::min(entry.nsMin, delta);
 			entry.nsMax = std::max(entry.nsMax, delta);
 			entry.nsTot += delta;
+			entry.nsAvg = entry.nsTot / entry.invocationCount;
 		}
 	}
 }
@@ -117,7 +118,7 @@ void profiler::LogStats() {
 			funcInfo.fileLine,
 			data.nsMax,
 			data.nsMin,
-			data.nsTot / data.invocationCount,
+			data.nsAvg,
 			data.nsTot,
 			data.invocationCount
 		);

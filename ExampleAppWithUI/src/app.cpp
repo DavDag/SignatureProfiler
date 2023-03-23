@@ -27,7 +27,6 @@ void App::render(int w, int h) {
 	GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
 	this->_display.ui(w, h);
 	if (this->_showProfilerUI) {
-		// TODO: ISSUE 1st time
 		profiler::ImGuiRenderFrameHistory(
 			profiler::GetFrameHistory(),
 			w, h

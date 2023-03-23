@@ -1,8 +1,8 @@
 #pragma once
 
-typedef unsigned int Crc32;
+#include "profilerlib.hpp"
 
-static constexpr const Crc32 table[256] = {
+static constexpr const profiler::CRC32 table[256] = {
     0x00000000U, 0x77073096U, 0xEE0E612CU, 0x990951BAU, 0x076DC419U,
     0x706AF48FU, 0xE963A535U, 0x9E6495A3U, 0x0EDB8832U, 0x79DCB8A4U,
     0xE0D5E91EU, 0x97D2D988U, 0x09B64C2BU, 0x7EB17CBDU, 0xE7B82D07U,
@@ -57,7 +57,11 @@ static constexpr const Crc32 table[256] = {
     0x2D02EF8DU
 };
 
-constexpr Crc32 ComputeCRC32(const char* data, int len, Crc32 crc = 0) {
+profiler::CRC32 profiler::ComputeCRC32(const char* data, int len, profiler::CRC32 crc /*= 0*/) {
+    return __ComputeCRC32(data, len, crc);
+}
+
+constexpr profiler::CRC32 profiler::__ComputeCRC32(const char* data, int len, profiler::CRC32 crc /*= 0*/) {
     crc = crc ^ 0xFFFFFFFFU;
     for (int i = 0; i < len; i++) {
         crc = table[*data ^ (crc & 0xFF)] ^ (crc >> 8);
@@ -66,4 +70,3 @@ constexpr Crc32 ComputeCRC32(const char* data, int len, Crc32 crc = 0) {
     crc = crc ^ 0xFFFFFFFFU;
     return crc;
 }
-

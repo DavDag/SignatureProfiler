@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleApp01", "ExampleApp01\ExampleApp01.vcxproj", "{94EB069E-E921-4A87-9FEE-8FAB7586D045}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleSimpleApp", "ExampleApp01\ExampleApp01.vcxproj", "{94EB069E-E921-4A87-9FEE-8FAB7586D045}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2F55FE9D-93F5-4747-AD24-520D5C764228} = {2F55FE9D-93F5-4747-AD24-520D5C764228}
 	EndProjectSection
@@ -11,6 +11,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProfilerLib", "ProfilerLib\ProfilerLib.vcxproj", "{2F55FE9D-93F5-4747-AD24-520D5C764228}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleAppWithUI", "ExampleAppWithUI\ExampleAppWithUI.vcxproj", "{33E6C9FF-A1E8-43D6-A9B1-275811407BBD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2F55FE9D-93F5-4747-AD24-520D5C764228} = {2F55FE9D-93F5-4747-AD24-520D5C764228}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleMultiThreadedApp", "ExampleMultiThreadedApp\ExampleMultiThreadedApp.vcxproj", "{D67287A5-0A14-4EDD-AF2F-2BFE74CC5D32}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2F55FE9D-93F5-4747-AD24-520D5C764228} = {2F55FE9D-93F5-4747-AD24-520D5C764228}
 	EndProjectSection
@@ -40,6 +45,12 @@ Global
 		{33E6C9FF-A1E8-43D6-A9B1-275811407BBD}.Profile|x64.Build.0 = Profile|x64
 		{33E6C9FF-A1E8-43D6-A9B1-275811407BBD}.Release|x64.ActiveCfg = Release|x64
 		{33E6C9FF-A1E8-43D6-A9B1-275811407BBD}.Release|x64.Build.0 = Release|x64
+		{D67287A5-0A14-4EDD-AF2F-2BFE74CC5D32}.Debug|x64.ActiveCfg = Debug|x64
+		{D67287A5-0A14-4EDD-AF2F-2BFE74CC5D32}.Debug|x64.Build.0 = Debug|x64
+		{D67287A5-0A14-4EDD-AF2F-2BFE74CC5D32}.Profile|x64.ActiveCfg = Profile|x64
+		{D67287A5-0A14-4EDD-AF2F-2BFE74CC5D32}.Profile|x64.Build.0 = Profile|x64
+		{D67287A5-0A14-4EDD-AF2F-2BFE74CC5D32}.Release|x64.ActiveCfg = Release|x64
+		{D67287A5-0A14-4EDD-AF2F-2BFE74CC5D32}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

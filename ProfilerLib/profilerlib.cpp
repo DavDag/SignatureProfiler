@@ -1,10 +1,10 @@
 #include "profilerlib.hpp"
 
 static bool gEnabled = false;
+thread_local profiler::InfoTable gInfoDatabase{};
+thread_local profiler::StatsTable gStatsDatabase{};
 thread_local int gFrameHistoryIndex = 0;
-thread_local std::vector<profiler::FrameHistoryEntry> gFrameHistory[2] = { {} };
-thread_local std::unordered_map<profiler::FuncID, profiler::StatsEntry> gStatsDatabase{};
-thread_local std::unordered_map<profiler::FuncID, profiler::FuncInfo> gInfoDatabase{};
+thread_local profiler::FrameHistory gFrameHistory[2] = { {} };
 
 struct StackEntry {
 	profiler::FuncID func;
@@ -19,7 +19,7 @@ void PEnter(profiler::FuncID func) {
 	gFrameHistory[gFrameHistoryIndex].push_back({
 		.id = func,
 		.time = profiler::Now(),
-		});
+	});
 }
 
 void PExit(profiler::FuncID func /* should be NULL */) {
@@ -27,7 +27,7 @@ void PExit(profiler::FuncID func /* should be NULL */) {
 	gFrameHistory[gFrameHistoryIndex].push_back({
 		.id = profiler::EmptyFuncID,
 		.time = profiler::Now(),
-		});
+	});
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ void profiler::FrameEnd() {
 			gStack.pop_back();
 			if (!gStatsDatabase.contains(id))
 				gStatsDatabase.insert({ id, {} });
-			profiler::StatsEntry& entry = gStatsDatabase.at(id);
+			profiler::FuncStats& entry = gStatsDatabase.at(id);
 			entry.invocationCount++;
 			entry.nsMin = std::min(entry.nsMin, delta);
 			entry.nsMax = std::max(entry.nsMax, delta);
@@ -89,26 +89,36 @@ const profiler::FuncInfo& profiler::GetFuncInfo(FuncID func) {
 	return gInfoDatabase.at(func);
 }
 
-const std::unordered_map<profiler::FuncID, profiler::FuncInfo>& profiler::GetInfoTable() {
+const profiler::InfoTable& profiler::GetInfoTable() {
 	return gInfoDatabase;
 }
 
-const profiler::StatsEntry& profiler::GetFuncStats(FuncID func) {
+const profiler::FuncStats& profiler::GetFuncStats(FuncID func) {
 	return gStatsDatabase.at(func);
 }
 
-const std::unordered_map<profiler::FuncID, profiler::StatsEntry>& profiler::GetStatsTable() {
+const profiler::StatsTable& profiler::GetStatsTable() {
 	return gStatsDatabase;
 }
 
-const std::vector<profiler::FrameHistoryEntry>& profiler::GetFrameHistory() {
+const profiler::FrameHistory& profiler::GetFrameHistory() {
 	return gFrameHistory[((gFrameHistoryIndex - 1) + 2) % 2];
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
-void profiler::LogStats() {
-	for (const auto& p : gStatsDatabase) {
+inline profiler::TimeStamp profiler::Now() noexcept {
+	return std::chrono::high_resolution_clock::now();
+}
+
+inline profiler::DeltaNs profiler::ComputeDelta(TimeStamp beg, TimeStamp end) noexcept {
+	return (std::chrono::duration_cast<std::chrono::microseconds>(end - beg)).count();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void profiler::LogStats(const StatsTable& stats) {
+	for (const auto& p : stats) {
 		auto funcId = p.first;
 		const auto& data = p.second;
 		const auto& funcInfo = profiler::GetFuncInfo(funcId);
@@ -125,11 +135,27 @@ void profiler::LogStats() {
 	}
 }
 
-void profiler::LogHistory() {
-	std::stack<const FrameHistoryEntry*> callstack;
-	for (const auto& e : gFrameHistory[gFrameHistoryIndex]) {
+void profiler::LogStatsCompact(const StatsTable& stats) {
+	for (const auto& p : stats) {
+		auto funcId = p.first;
+		const auto& data = p.second;
+		const auto& funcInfo = profiler::GetFuncInfo(funcId);
+		printf(
+			"%-32.32s.%-4d | Avg: %8lld (ns) | Count: %d\n",
+			funcInfo.funcName,
+			funcInfo.fileLine,
+			data.nsAvg,
+			data.invocationCount
+		);
+	}
+}
+
+void profiler::LogHistory(const FrameHistory& history) {
+	std::stack<int> callstack;
+	for (int i = 0; i < history.size(); ++i) {
+		const auto& e = history[i];
 		if (e.id != EmptyFuncID) {
-			callstack.push(&e);
+			callstack.push(i);
 			const auto& funcInfo = profiler::GetFuncInfo(e.id);
 			printf(
 				"%*.s[+] %-s.%-3d\n",
@@ -140,17 +166,38 @@ void profiler::LogHistory() {
 			);
 		}
 		else {
-			auto start = callstack.top()->time;
-			const auto& funcInfo = profiler::GetFuncInfo(callstack.top()->id);
+			const auto& startEv = history[callstack.top()];
 			callstack.pop();
+			const auto& funcInfo = profiler::GetFuncInfo(startEv.id);
 			printf(
-				"%*.s[-] %-s.%-3d, time: %llu (ns)\n",
-				(unsigned int) callstack.size(),
+				"%*.s[-] %-s.%03d, time: %llu (ns)\n",
+				(unsigned int)(callstack.size() - 1) * 2,
 				"",
 				funcInfo.funcName,
 				funcInfo.fileLine,
-				(std::chrono::duration_cast<std::chrono::microseconds>(e.time - start)).count()
+				ComputeDelta(startEv.time, e.time)
 			);
+		}
+	}
+}
+
+void profiler::LogHistoryCompact(const FrameHistory& history) {
+	std::stack<int> callstack;
+	for (int i = 0; i < history.size(); ++i) {
+		const auto& e = history[i];
+		if (e.id != EmptyFuncID) {
+			callstack.push(i);
+			const auto& funcInfo = profiler::GetFuncInfo(e.id);
+			printf(
+				"%*.s[+] %-s.%-3d\n",
+				(unsigned int)(callstack.size() - 1) * 2,
+				"",
+				funcInfo.funcName,
+				funcInfo.fileLine
+			);
+		}
+		else {
+			callstack.pop();
 		}
 	}
 }

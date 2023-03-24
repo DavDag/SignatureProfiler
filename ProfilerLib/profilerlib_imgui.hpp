@@ -7,7 +7,7 @@
 
 namespace profiler {
 	void ImGuiRenderFrameHistory(
-		const std::vector<FrameHistoryEntry>& history,
+		const FrameHistory& history,
 		int screenW, int screenH
 	);
 
@@ -43,7 +43,7 @@ namespace profiler {
 ///////////////////////////////////////////////////////////////////////////////
 
 void profiler::ImGuiRenderFrameHistory(
-	const std::vector<FrameHistoryEntry>& history,
+	const FrameHistory& history,
 	int screenW, int screenH
 ) {
 	if (history.size() == 0) return;

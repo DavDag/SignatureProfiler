@@ -84,7 +84,6 @@ bool __Error(const char* func, const int line) {
 }
 
 void profiler::__GetFuncInfo(FuncID func, FuncInfo& info) {
-	info.id = func;
 
 	//////////////////////////////////////////////////////////////////////////////
 	// https://learn.microsoft.com/en-us/windows/win32/debug/retrieving-symbol-information-by-address
@@ -128,4 +127,9 @@ void profiler::__GetFuncInfo(FuncID func, FuncInfo& info) {
 		strcpy_s(info.fileName, lineInfo.FileName);
 		info.fileLine = lineInfo.LineNumber;
 	}
+
+	info.id = func;
+	info.funcNameLen = strnlen_s(info.funcName, 1024);
+	info.funcNameExtLen = strnlen_s(info.funcNameExt, 1024);
+	info.fileNameLen = strnlen_s(info.fileName, 1024);
 }

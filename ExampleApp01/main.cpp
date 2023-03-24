@@ -81,47 +81,18 @@ void mymain() {
 }
 
 int main(int argc, char* argv[]) {
-    auto mainStart = std::chrono::high_resolution_clock::now();
-    ///////////////////////////////////////////////////////////////////////////////////
     LOG("[PROFILER ENABLED]\n");
     profiler::Enable();
-    long long int profilerInvocations = 0;
     for (int i = 0; i < 100'000; ++i) {
         profiler::FrameStart();
         mymain();
-        profilerInvocations += profiler::GetFrameHistory().size();
         profiler::FrameEnd();
     }
-    profiler::LogHistory();
     profiler::Disable();
     LOG("[PROFILER DISABLED]\n");
-    ///////////////////////////////////////////////////////////////////////////////////
-    auto mainEnd = std::chrono::high_resolution_clock::now();
-    auto mainDelta = std::chrono::duration_cast<std::chrono::microseconds>(mainEnd - mainStart);
-    ///////////////////////////////////////////////////////////////////////////////////
-    long long int timeSpentInsideFunctions = 0;
-    const auto& stats = profiler::GetStats();
-    for (const auto& p : stats) {
-        auto funcId = p.first;
-        const auto& data = p.second;
-        const auto& funcInfo = profiler::GetFuncInfo(funcId);
-        printf(
-            "%-64.64s.%-4d | Max: %8lld (ns) | Min: %8lld (ns) | Avg: %8lld (ns) | Tot: %8lld (ns) | Count: %d\n",
-            //funcInfo.fileName,
-            funcInfo.funcNameUndecorated,
-            funcInfo.fileLine,
-            data.nsMax,
-            data.nsMin,
-            data.nsTot / data.invocationCount,
-            data.nsTot,
-            data.invocationCount
-        );
-        timeSpentInsideFunctions += data.nsTot;
-    }
-    ///////////////////////////////////////////////////////////////////////////////////
-    printf("Main Tot (ns): %lld\n", mainDelta.count());
-    printf("Profiler Invocation Count: %lld\n", profilerInvocations);
-    printf("Profiler Time (ns): %lld\n", mainDelta.count() - timeSpentInsideFunctions);
-    printf("Profiler Avg x Call (ns): %.4f\n", (mainDelta.count() - timeSpentInsideFunctions) / (double)profilerInvocations);
+    printf("\n[HISTORY]\n");
+    profiler::LogHistory();
+    printf("\n[STATS]\n");
+    profiler::LogStats();
     return 0;
 }

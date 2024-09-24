@@ -49,7 +49,7 @@ int WinMain(int argc, char* argv[])
     profiler::Enable();
     profiler::FrameStart();
     ///////////////////////
-    int w = 1920, h = 1080;
+    int w = 1200, h = 600;
     App app{};
     GLFWwindow* window = nullptr;
     initialization(app, window, w, h);
@@ -57,9 +57,9 @@ int WinMain(int argc, char* argv[])
     profiler::FrameEnd();
     profiler::Disable();
     printf("\n\n[History]\n\n");
-    profiler::LogHistory();
+    profiler::LogHistory(profiler::GetFrameHistory());
     printf("\n\n[Initialization]\n\n");
-    profiler::LogStats();
+    profiler::LogStats(profiler::GetStatsTable());
     profiler::ClearStats();
 
     ////////////////////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ int WinMain(int argc, char* argv[])
     ///////////////////////
     profiler::Disable();
     printf("\n\n[Main]\n\n");
-    profiler::LogStats();
+    profiler::LogStats(profiler::GetStatsTable());
 
     ////////////////////////////////////////////////////////////////////////////
     // Termination
@@ -231,7 +231,7 @@ int initImGui(GLFWwindow* window) {
     // Font
     ImGuiIO& io = ImGui::GetIO();
     ImFontConfig cfg;
-    cfg.SizePixels = 22;
+    cfg.SizePixels = 18;
     cfg.RasterizerMultiply = 1.4f;
     //io.Fonts->AddFontDefault(&cfg);
     // https://www.fontsquirrel.com/fonts/Luxi-Mono

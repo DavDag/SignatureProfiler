@@ -19,7 +19,7 @@ namespace profiler {
 
 	// Time
 	using TimeStamp = std::chrono::high_resolution_clock::time_point;
-	using DeltaNs = long long int;
+	using DeltaUs = long long int;
 
 	// Structs
 	struct FuncInfo {
@@ -34,10 +34,10 @@ namespace profiler {
 	};
 	using InfoTable = std::unordered_map<FuncID, FuncInfo>;
 	struct FuncStats {
-		DeltaNs nsTot = 0;
-		DeltaNs nsMin = 1'000'000'000;
-		DeltaNs nsMax = 0;
-		DeltaNs nsAvg = 0;
+		DeltaUs usTot = 0;
+		DeltaUs usMin = 1'000'000'000;
+		DeltaUs usMax = 0;
+		DeltaUs usAvg = 0;
 		int invocationCount = 0;
 	};
 	using StatsTable = std::unordered_map<FuncID, FuncStats>;
@@ -70,7 +70,7 @@ namespace profiler {
 	DLLAPI CRC32 ComputeCRC32(const char* data, int len, CRC32 crc = 0);
 	constexpr CRC32 __ComputeCRC32(const char* data, int len, CRC32 crc = 0);
 	DLLAPI inline TimeStamp Now() noexcept;
-	DLLAPI inline DeltaNs ComputeDelta(TimeStamp beg, TimeStamp end) noexcept;
+	DLLAPI inline DeltaUs ComputeDelta(TimeStamp beg, TimeStamp end) noexcept;
 	
 	// Internals
 	void __GetFuncInfo(FuncID func, FuncInfo& info);

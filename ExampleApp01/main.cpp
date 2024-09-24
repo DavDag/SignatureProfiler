@@ -91,8 +91,8 @@ int main(int argc, char* argv[]) {
     profiler::Disable();
     LOG("[PROFILER DISABLED]\n");
     printf("\n[HISTORY]\n");
-    profiler::LogHistory();
+    profiler::LogHistory(profiler::GetFrameHistory());
     printf("\n[STATS]\n");
-    profiler::LogStats();
+    profiler::LogStats(profiler::GetStatsTable());
     return 0;
 }

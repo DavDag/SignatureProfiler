@@ -62,16 +62,16 @@ void profiler::FrameEnd() {
 			FuncID id = gStack[gStack.size() - 1].func;
 			TimeStamp beg = gStack[gStack.size() - 1].start;
 			TimeStamp end = e.time;
-			DeltaNs delta = ComputeDelta(beg, end);
+			DeltaUs delta = ComputeDelta(beg, end);
 			gStack.pop_back();
 			if (!gStatsDatabase.contains(id))
 				gStatsDatabase.insert({ id, {} });
 			profiler::FuncStats& entry = gStatsDatabase.at(id);
 			entry.invocationCount++;
-			entry.nsMin = std::min(entry.nsMin, delta);
-			entry.nsMax = std::max(entry.nsMax, delta);
-			entry.nsTot += delta;
-			entry.nsAvg = entry.nsTot / entry.invocationCount;
+			entry.usMin = std::min(entry.usMin, delta);
+			entry.usMax = std::max(entry.usMax, delta);
+			entry.usTot += delta;
+			entry.usAvg = entry.usTot / entry.invocationCount;
 		}
 	}
 }
@@ -111,40 +111,50 @@ inline profiler::TimeStamp profiler::Now() noexcept {
 	return std::chrono::high_resolution_clock::now();
 }
 
-inline profiler::DeltaNs profiler::ComputeDelta(TimeStamp beg, TimeStamp end) noexcept {
+inline profiler::DeltaUs profiler::ComputeDelta(TimeStamp beg, TimeStamp end) noexcept {
 	return (std::chrono::duration_cast<std::chrono::microseconds>(end - beg)).count();
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
 void profiler::LogStats(const StatsTable& stats) {
-	for (const auto& p : stats) {
+	std::vector<std::pair<FuncID, FuncStats>> list(stats.begin(), stats.end());
+	std::sort(list.begin(), list.end(),
+		[](const std::pair<FuncID, FuncStats>& a, const std::pair<FuncID, FuncStats>& b) {
+			return (a.second.usTot > b.second.usTot);
+		});
+	for (const auto& p : list) {
 		auto funcId = p.first;
 		const auto& data = p.second;
 		const auto& funcInfo = profiler::GetFuncInfo(funcId);
 		printf(
-			"%-64.64s.%-4d | Max: %8lld (ns) | Min: %8lld (ns) | Avg: %8lld (ns) | Tot: %8lld (ns) | Count: %d\n",
+			"%-64.64s.%-4d | Max: %8lld (us) | Min: %8lld (us) | Avg: %8lld (us) | Tot: %8lld (us) | Count: %d\n",
 			funcInfo.funcName,
 			funcInfo.fileLine,
-			data.nsMax,
-			data.nsMin,
-			data.nsAvg,
-			data.nsTot,
+			data.usMax,
+			data.usMin,
+			data.usAvg,
+			data.usTot,
 			data.invocationCount
 		);
 	}
 }
 
 void profiler::LogStatsCompact(const StatsTable& stats) {
-	for (const auto& p : stats) {
+	std::vector<std::pair<FuncID, FuncStats>> list(stats.begin(), stats.end());
+	std::sort(list.begin(), list.end(),
+		[](const std::pair<FuncID, FuncStats>& a, const std::pair<FuncID, FuncStats>& b) {
+			return (a.second.usTot > b.second.usTot);
+		});
+	for (const auto& p : list) {
 		auto funcId = p.first;
 		const auto& data = p.second;
 		const auto& funcInfo = profiler::GetFuncInfo(funcId);
 		printf(
-			"%-32.32s.%-4d | Avg: %8lld (ns) | Count: %d\n",
+			"%-32.32s.%-4d | Avg: %8lld (us) | Count: %d\n",
 			funcInfo.funcName,
 			funcInfo.fileLine,
-			data.nsAvg,
+			data.usAvg,
 			data.invocationCount
 		);
 	}
@@ -159,7 +169,7 @@ void profiler::LogHistory(const FrameHistory& history) {
 			const auto& funcInfo = profiler::GetFuncInfo(e.id);
 			printf(
 				"%*.s[+] %-s.%-3d\n",
-				(unsigned int)callstack.size() - 1,
+				((unsigned int)callstack.size() - 1) * 2,
 				"",
 				funcInfo.funcName,
 				funcInfo.fileLine
@@ -167,16 +177,16 @@ void profiler::LogHistory(const FrameHistory& history) {
 		}
 		else {
 			const auto& startEv = history[callstack.top()];
-			callstack.pop();
 			const auto& funcInfo = profiler::GetFuncInfo(startEv.id);
 			printf(
-				"%*.s[-] %-s.%03d, time: %llu (ns)\n",
+				"%*.s[-] %-s.%03d, time: %llu (us)\n",
 				(unsigned int)(callstack.size() - 1) * 2,
 				"",
 				funcInfo.funcName,
 				funcInfo.fileLine,
 				ComputeDelta(startEv.time, e.time)
 			);
+			callstack.pop();
 		}
 	}
 }

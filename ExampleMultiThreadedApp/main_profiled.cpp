@@ -22,15 +22,15 @@ int yuppie(profiler::TimeStamp refBeg, size_t tIndex) {
     profiler::TimeStamp beg = profiler::Now();
     int acc = fakeload(1000);
     profiler::TimeStamp end = profiler::Now();
-    profiler::DeltaNs delta = profiler::ComputeDelta(beg, end);
-    profiler::DeltaNs deltaBeg = profiler::ComputeDelta(refBeg, beg);
-    profiler::DeltaNs deltaEnd = profiler::ComputeDelta(refBeg, end);
+    profiler::DeltaUs delta = profiler::ComputeDelta(beg, end);
+    profiler::DeltaUs deltaBeg = profiler::ComputeDelta(refBeg, beg);
+    profiler::DeltaUs deltaEnd = profiler::ComputeDelta(refBeg, end);
     /////////////////////////////
     gHistories[tIndex] = profiler::FrameHistory(profiler::GetFrameHistory());
     gResults[tIndex]
         << std::this_thread::get_id()
         << " [" << deltaBeg << ", " << deltaEnd << "] "
-        << delta << " (ns)";
+        << delta << " (us)";
     return acc;
 }
 

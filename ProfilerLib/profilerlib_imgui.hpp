@@ -14,9 +14,9 @@ namespace profiler {
 	namespace internal {
 		bool __DrawFuncRect(
 			profiler::FuncID func,
-			DeltaNs funcOffset,
-			DeltaNs funcDuration,
-			DeltaNs timeFrameDuration,
+			DeltaUs funcOffset,
+			DeltaUs funcDuration,
+			DeltaUs timeFrameDuration,
 			float totalW,
 			float startY,
 			int funcLevel,
@@ -25,12 +25,12 @@ namespace profiler {
 			bool showLabel = false,
 			bool returnClicked = false
 		);
-		
+
 		void __DrawTimeLines(
 			int timeLinesMax,
-			profiler::DeltaNs timeRounding,
-			profiler::DeltaNs timeFrameDuration,
-			profiler::DeltaNs timeFrameBeg,
+			profiler::DeltaUs timeRounding,
+			profiler::DeltaUs timeFrameDuration,
+			profiler::DeltaUs timeFrameBeg,
 			float totalW,
 			float lineStartY,
 			float lineHeight,
@@ -85,7 +85,7 @@ void profiler::ImGuiRenderFrameHistory(
 			ImGuiIO& io = ImGui::GetIO();
 			static float chartLevelH = 50.f;
 			static int chartMaxLevel = 12;
-			static const char* statsTimeUnit[] = { "ns", "ms", "s" };
+			static const char* statsTimeUnit[] = { "us", "ms", "s" };
 			static float statsTimeUnitConv[] = { 1, 1'000, 1'000'000 };
 			static int statsTimeUnitIndex = 0;
 
@@ -120,7 +120,7 @@ void profiler::ImGuiRenderFrameHistory(
 				// 2. Frame vars
 				TimeStamp frameBeg = history[0].time;
 				TimeStamp frameEnd = history[history.size() - 1].time;
-				DeltaNs frameDuration = ComputeDelta(frameBeg, frameEnd);
+				DeltaUs frameDuration = ComputeDelta(frameBeg, frameEnd);
 
 				// 3. Events Rects
 				static std::stack<profiler::FrameHistoryEntry> stack{}; // exploration stack
@@ -134,8 +134,8 @@ void profiler::ImGuiRenderFrameHistory(
 						stack.pop();
 						int level = (int)stack.size();
 						if (level < maxLevel) {
-							DeltaNs off = ComputeDelta(frameBeg, begEvent.time);
-							DeltaNs dur = ComputeDelta(begEvent.time, ev.time);
+							DeltaUs off = ComputeDelta(frameBeg, begEvent.time);
+							DeltaUs dur = ComputeDelta(begEvent.time, ev.time);
 							internal::__DrawFuncRect(
 								begEvent.id, off, dur, frameDuration,
 								w, starty, level, levelH,
@@ -217,10 +217,10 @@ void profiler::ImGuiRenderFrameHistory(
 				// 2. Frame vars (zoomed)
 				TimeStamp frameBeg = history[0].time;
 				TimeStamp frameEnd = history[history.size() - 1].time;
-				DeltaNs frameDuration = ComputeDelta(frameBeg, frameEnd);
-				DeltaNs zoomBegNs = (DeltaNs)(frameDuration * selFrom);
-				DeltaNs zoomEndNs = (DeltaNs)(frameDuration * selTo);
-				DeltaNs zoomDuration = zoomEndNs - zoomBegNs;
+				DeltaUs frameDuration = ComputeDelta(frameBeg, frameEnd);
+				DeltaUs zoomBegUs = (DeltaUs)(frameDuration * selFrom);
+				DeltaUs zoomEndUs = (DeltaUs)(frameDuration * selTo);
+				DeltaUs zoomDuration = zoomEndUs - zoomBegUs;
 
 				// 3. Events Rects
 				static std::stack<int> stack{}; // exploration stack
@@ -235,10 +235,10 @@ void profiler::ImGuiRenderFrameHistory(
 						const auto& begEvent = history[begEventIndex];
 						int level = (int)stack.size();
 						if (level < maxLevel) {
-							DeltaNs absOff = ComputeDelta(frameBeg, begEvent.time);
-							DeltaNs absDur = ComputeDelta(begEvent.time, ev.time);
-							DeltaNs relOff = absOff - zoomBegNs;
-							DeltaNs relDur = absDur;
+							DeltaUs absOff = ComputeDelta(frameBeg, begEvent.time);
+							DeltaUs absDur = ComputeDelta(begEvent.time, ev.time);
+							DeltaUs relOff = absOff - zoomBegUs;
+							DeltaUs relDur = absDur;
 							if (relOff < 0) {
 								relDur += relOff;
 								relOff = 0;
@@ -260,7 +260,7 @@ void profiler::ImGuiRenderFrameHistory(
 				}
 
 				// 4. Time lines
-				internal::__DrawTimeLines(4, 100, zoomDuration, zoomBegNs, w, starty, maxLevel* levelH);
+				internal::__DrawTimeLines(4, 100, zoomDuration, zoomBegUs, w, starty, maxLevel * levelH);
 
 				// 5. Gestures
 				static float oldX = 0; // drag origin x
@@ -304,18 +304,18 @@ void profiler::ImGuiRenderFrameHistory(
 					///////////////////////////////////////////////////////////////
 					// Data
 					const char* timeUnit = statsTimeUnit[statsTimeUnitIndex];
-					float timeUnitConvFromNs = statsTimeUnitConv[statsTimeUnitIndex];
+					float timeUnitConvFromUs = statsTimeUnitConv[statsTimeUnitIndex];
 					FuncID funcID = history[selectedHistoryIndexBeg].id;
 					const auto& funcInfo = GetFuncInfo(funcID);
 					const auto& funcStats = GetFuncStats(funcID);
 					TimeStamp funcBeg = history[selectedHistoryIndexBeg].time;
 					TimeStamp funcEnd = history[selectedHistoryIndexEnd].time;
-					DeltaNs funcDur = ComputeDelta(funcBeg, funcEnd);
+					DeltaUs funcDur = ComputeDelta(funcBeg, funcEnd);
 					TimeStamp frameBeg = history[0].time;
 					TimeStamp frameEnd = history[history.size() - 1].time;
-					DeltaNs frameDur = ComputeDelta(frameBeg, frameEnd);
-					DeltaNs funcBegRel = ComputeDelta(frameBeg, funcBeg);
-					DeltaNs funcEndRel = ComputeDelta(frameBeg, funcEnd);
+					DeltaUs frameDur = ComputeDelta(frameBeg, frameEnd);
+					DeltaUs funcBegRel = ComputeDelta(frameBeg, funcBeg);
+					DeltaUs funcEndRel = ComputeDelta(frameBeg, funcEnd);
 
 					///////////////////////////////////////////////////////////////
 					// Display data
@@ -339,18 +339,18 @@ void profiler::ImGuiRenderFrameHistory(
 						///////////////////////////
 						// Performance
 						ImGui::TableSetColumnIndex(1);
-						ImGui::Text("Max: %14.3f (%s)", funcStats.nsMax / timeUnitConvFromNs, timeUnit);
-						ImGui::Text("Min: %14.3f (%s)", funcStats.nsMin / timeUnitConvFromNs, timeUnit);
-						ImGui::Text("Avg: %14.3f (%s)", funcStats.nsAvg / timeUnitConvFromNs, timeUnit);
-						ImGui::Text("Tot: %14.3f (%s)", funcStats.nsTot / timeUnitConvFromNs, timeUnit);
+						ImGui::Text("Max: %14.3f (%s)", funcStats.usMax / timeUnitConvFromUs, timeUnit);
+						ImGui::Text("Min: %14.3f (%s)", funcStats.usMin / timeUnitConvFromUs, timeUnit);
+						ImGui::Text("Avg: %14.3f (%s)", funcStats.usAvg / timeUnitConvFromUs, timeUnit);
+						ImGui::Text("Tot: %14.3f (%s)", funcStats.usTot / timeUnitConvFromUs, timeUnit);
 						ImGui::Text("#Calls: %12lld", funcStats.invocationCount);
 
 						///////////////////////////
 						// Current Frame
 						ImGui::TableSetColumnIndex(2);
-						ImGui::Text("Beg: %14.3f (%s)", funcBegRel / timeUnitConvFromNs, timeUnit);
-						ImGui::Text("End: %14.3f (%s)", funcEndRel / timeUnitConvFromNs, timeUnit);
-						ImGui::Text("Dur: %14.3f (%s)",    funcDur / timeUnitConvFromNs, timeUnit);
+						ImGui::Text("Beg: %14.3f (%s)", funcBegRel / timeUnitConvFromUs, timeUnit);
+						ImGui::Text("End: %14.3f (%s)", funcEndRel / timeUnitConvFromUs, timeUnit);
+						ImGui::Text("Dur: %14.3f (%s)", funcDur / timeUnitConvFromUs, timeUnit);
 
 						///////////////////////////
 						// Stack Trace
@@ -372,7 +372,7 @@ void profiler::ImGuiRenderFrameHistory(
 								}
 							}
 						}
-						for (int i = (int) funcStack.size() - 1; i >= 0; --i) {
+						for (int i = (int)funcStack.size() - 1; i >= 0; --i) {
 							const auto& ev = history[funcStack[i]];
 							const auto& stackFuncInfo = GetFuncInfo(ev.id);
 							ImGui::Text(">> %s.%d", stackFuncInfo.funcName, stackFuncInfo.fileLine);
@@ -395,9 +395,9 @@ void profiler::ImGuiRenderFrameHistory(
 
 bool profiler::internal::__DrawFuncRect(
 	profiler::FuncID func,
-	DeltaNs funcOffset,
-	DeltaNs funcDuration,
-	DeltaNs timeFrameDuration,
+	DeltaUs funcOffset,
+	DeltaUs funcDuration,
+	DeltaUs timeFrameDuration,
 	float totalW,
 	float startY,
 	int funcLevel,
@@ -407,7 +407,7 @@ bool profiler::internal::__DrawFuncRect(
 	bool returnClicked /*= false*/
 ) {
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
-	float beg = (funcOffset               ) / (float)timeFrameDuration;
+	float beg = (funcOffset) / (float)timeFrameDuration;
 	float end = (funcOffset + funcDuration) / (float)timeFrameDuration;
 	end = std::max(end, 0.001f);
 	const auto& info = profiler::GetFuncInfo(func);
@@ -437,9 +437,9 @@ bool profiler::internal::__DrawFuncRect(
 
 void profiler::internal::__DrawTimeLines(
 	int timeLinesMax,
-	profiler::DeltaNs timeRounding,
-	profiler::DeltaNs timeFrameDuration,
-	profiler::DeltaNs timeFrameBeg,
+	profiler::DeltaUs timeRounding,
+	profiler::DeltaUs timeFrameDuration,
+	profiler::DeltaUs timeFrameBeg,
 	float totalW,
 	float lineStartY,
 	float lineHeight,
@@ -448,16 +448,16 @@ void profiler::internal::__DrawTimeLines(
 ) {
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
 	static char buff[64] = { {'\0'} };
-	DeltaNs timeLinesCount = (timeFrameDuration / timeRounding) + 1;
-	profiler::DeltaNs timeRoundingRel = timeRounding * ((timeLinesCount / timeLinesMax) + 1);
-	profiler::DeltaNs timeFrameBegRel = timeFrameBeg - (timeFrameBeg % timeRoundingRel);
+	DeltaUs timeLinesCount = (timeFrameDuration / timeRounding) + 1;
+	profiler::DeltaUs timeRoundingRel = timeRounding * ((timeLinesCount / timeLinesMax) + 1);
+	profiler::DeltaUs timeFrameBegRel = timeFrameBeg - (timeFrameBeg % timeRoundingRel);
 	for (int i = 0; i < timeLinesCount; ++i) {
-		profiler::DeltaNs timeNs = timeFrameBegRel + timeRoundingRel * (i + 1LL);
-		float timePercentage = (timeNs - timeFrameBeg) / (float)timeFrameDuration;
+		profiler::DeltaUs timeUs = timeFrameBegRel + timeRoundingRel * (i + 1LL);
+		float timePercentage = (timeUs - timeFrameBeg) / (float)timeFrameDuration;
 		ImVec2 lineMin = ImVec2(timePercentage * totalW, lineStartY);
 		ImVec2 lineMax = ImVec2(timePercentage * totalW, lineStartY + lineHeight);
 		drawList->AddLine(lineMin, lineMax, lineColor);
-		int n = sprintf_s(buff, textFormat, timeNs / 1'000.f);
+		int n = sprintf_s(buff, textFormat, timeUs / 1'000.f);
 		ImVec2 textSize = ImGui::CalcTextSize(buff, buff + n);
 		ImVec2 textPos = ImVec2(lineMin.x - textSize.x / 2, lineMin.y - textSize.y);
 		ImGui::RenderText(textPos, buff, buff + n);

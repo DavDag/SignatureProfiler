@@ -27,3 +27,4 @@ It's intended use is for Game profiling, thus it's built to be thread-safe, have
 
 ### Advanced UI Sample
 https://github.com/DavDag/Cpp-3D-Cellular-Automata
+![image](https://github.com/user-attachments/assets/cf2c8069-3752-43f9-98c2-3de3f5d64b64)

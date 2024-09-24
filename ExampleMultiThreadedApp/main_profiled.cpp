@@ -1,5 +1,6 @@
 #include "main_profiled.hpp"
 
+#include <thread>
 #include <random>
 
 std::stringstream gResults[THREAD_COUNT] = { {} };
